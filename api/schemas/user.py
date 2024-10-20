@@ -1,6 +1,4 @@
 from pydantic import BaseModel
-from typing import List, Optional
-from datetime import datetime
 
 # Схема для User
 class UserBase(BaseModel):
@@ -10,10 +8,10 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
-class UserOut(UserBase):
-    id: int
-    is_moderator: bool
-    is_active: bool
+# class UserOut(UserBase):
+#     id: int
+#     is_moderator: bool
+#     is_active: bool
 
-    class Config:
-        orm_mode = True
+#     class Config:
+#         orm_mode = True
