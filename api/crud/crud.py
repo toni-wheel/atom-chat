@@ -1,6 +1,6 @@
 # Функции для взаимодействия с базой данных
 
-import models, schemas
+import api.models.models as models, api.schemas.schemas as schemas
 from database import engine, db
 
 def start():

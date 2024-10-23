@@ -1,6 +1,7 @@
 fastapi
 pydantic
 pydantic-settings
+pydantic[email]
 uvicorn
 alembic
 asyncpg
@@ -9,3 +10,6 @@ psycopg2
 psycopg-binary
 sqlalchemy
 gunicorn
+passlib
+python-jose[cryptography]
+bcrypt
