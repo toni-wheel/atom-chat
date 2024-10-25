@@ -16,8 +16,15 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from models.user import Base
+
+from models.base import Base
+from models.user import User
+from models.message import Message
+from models.membership import Membership
+from models.channel import Channel
+
 target_metadata = Base.metadata
+
 # target_metadata = None
 
 # other values from the config, defined by the needs of env.py,

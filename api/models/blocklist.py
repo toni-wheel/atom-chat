@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from database import Base  # Импортируем базовый класс для моделей
+from models.base import Base
 
 class BlockList(Base):
     __tablename__ = "blocklist"
