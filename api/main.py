@@ -2,6 +2,8 @@
 
 from fastapi import FastAPI
 from routers.user import user_router
+from routers.message import message_router
+from routers.channel import channel_router
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -25,6 +27,8 @@ app.add_middleware(
 )
 
 app.include_router(user_router)
+app.include_router(message_router)
+app.include_router(channel_router)
 
 
 @app.get("/")

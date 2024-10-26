@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated, List
 from fake import fake_tasks, find_tasks
-import api.crud.crud as crud, api.schemas.schemas as schemas
+import crud.crud as crud, schemas.schemas as schemas
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 

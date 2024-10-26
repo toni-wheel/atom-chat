@@ -1,6 +1,6 @@
 # Функции для взаимодействия с базой данных
 
-import api.models.models as models, api.schemas.schemas as schemas
+import models.models as models, schemas.schemas as schemas
 from database import engine, db
 
 def start():
@@ -49,5 +49,4 @@ def delete_tasks():
         db.delete(task)
     db.commit()
     return found_tasks
-
 
