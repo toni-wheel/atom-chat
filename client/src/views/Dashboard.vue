@@ -3,22 +3,16 @@
     <div class="sidebar">
       <Chat />
     </div>
-    <div class="chat-list">
-      <!-- Здесь может быть список чатов -->
-      <ul>
-        <li v-for="(chat, index) in chats" :key="index">
-          {{ chat.name }}
-        </li>
-      </ul>
+    <div class="admin">
+      <h1>Добро пожаловать, {{ userStore.getUser.username }}!</h1>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
 import Chat from "./Chat.vue";
-
-const chats = ref([{ name: "Чат 1" }, { name: "Чат 2" }, { name: "Чат 3" }]);
+import { useUserStore } from "../store/userStore.js";
+const userStore = useUserStore();
 </script>
 
 <style lang="scss" scoped>
@@ -33,8 +27,12 @@ const chats = ref([{ name: "Чат 1" }, { name: "Чат 2" }, { name: "Чат 3
   padding: 16px;
 }
 
-.chat-list {
+.admin {
   flex: 2;
   padding: 16px;
+}
+
+.admin h1 {
+  margin: 0; /* Убираем отступы для заголовка */
 }
 </style>

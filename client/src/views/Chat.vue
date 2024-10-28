@@ -1,12 +1,24 @@
 <template>
   <div class="chat">
+    <div class="channels">
+      <span
+        v-for="channel in channels"
+        :key="channel.id"
+        :class="{ active: channel.id === currentChannelId }"
+        @click="selectChannel(channel.id)"
+        class="channel"
+      >
+        {{ channel.name }}
+      </span>
+    </div>
+
     <div class="messages">
       <div v-for="(message, index) in messages" :key="index" class="message">
         <span class="username">{{ message.user_id }}:</span>
         <span class="text">{{ message.content }}</span>
-        <!-- Замените text на content, если используется это поле -->
       </div>
     </div>
+
     <div class="chat-input">
       <input
         v-model="newMessage"
@@ -23,34 +35,60 @@
 import { ref, onMounted } from "vue";
 import { useUserStore } from "../store/userStore.js";
 import { useMessageStore } from "../store/messageStore.js";
+import { useChannelStore } from "../store/channelStore.js"; // Подключаем хранилище каналов
 
 const userStore = useUserStore();
 const messageStore = useMessageStore();
+const channelStore = useChannelStore();
 
 const newMessage = ref("");
-
-// Загружаем сообщения из первого канала при монтировании компонента
+const channels = ref([]);
 const messages = ref([]);
+const currentChannelId = ref(1); // Изначально выбран первый канал
+
+// Загружаем список каналов
+const loadChannels = async () => {
+  try {
+    channels.value = await channelStore.fetchChannels();
+    console.log(channels.value);
+  } catch (error) {
+    console.error("Ошибка загрузки каналов:", error);
+  }
+};
+
+// Загружаем сообщения для выбранного канала
 const loadMessages = async () => {
   try {
-    messages.value = await messageStore.getMessagesByChannel(1); // Загружаем сообщения для channel_id 1
+    messages.value = await messageStore.getMessagesByChannel(
+      currentChannelId.value
+    );
   } catch (error) {
     console.error("Ошибка загрузки сообщений:", error);
   }
 };
 
-onMounted(loadMessages);
+// Вызываем при монтировании компонента
+onMounted(async () => {
+  await loadChannels();
+  await loadMessages();
+});
 
+// Обработчик выбора канала
+const selectChannel = async (channelId) => {
+  currentChannelId.value = channelId;
+  await loadMessages();
+};
+
+// Отправка сообщения
 const sendMessage = async () => {
   if (newMessage.value.trim() !== "") {
     try {
       await messageStore.createMessage({
-        channel_id: 1,
-        user_id: userStore.getUser.id, // Предполагается, что у пользователя есть id
+        channel_id: currentChannelId.value,
+        user_id: userStore.getUser.id,
         content: newMessage.value,
       });
-      // Обновляем список сообщений после отправки нового
-      await loadMessages();
+      await loadMessages(); // Обновляем список сообщений после отправки нового
       newMessage.value = "";
     } catch (error) {
       console.error("Ошибка отправки сообщения:", error);
@@ -64,6 +102,27 @@ const sendMessage = async () => {
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+.channels {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background-color: #e0e0e0;
+  border-bottom: 1px solid #ccc;
+}
+
+.channel {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #007bff;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.channel.active {
+  background-color: #007bff;
+  color: white;
 }
 
 .messages {
