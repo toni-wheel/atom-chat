@@ -63,7 +63,7 @@ def login(user: user_schemas.UserLogin):
         raise HTTPException(status_code=400, detail="Неправильное имя пользователя или пароль")
     
     access_token = create_access_token(data={"sub": user.username})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"user": user, "access_token": access_token, "token_type": "bearer"}
 
 
 # Получить данных всех пользователей

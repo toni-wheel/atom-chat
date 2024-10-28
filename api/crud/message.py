@@ -1,13 +1,18 @@
 import models.message as message_model, schemas.message as message_schemas
 from database import engine, db
+from chat import manager
+
 
 
 # Создание сообщения
-def create_message(message: message_schemas.MessageCreate):
+async def create_message(message: message_schemas.MessageCreate):
     new_message = message_model.Message(**message.model_dump())
     db.add(new_message)
     db.commit()
     db.refresh(new_message)
+
+    await manager.send_message(new_message.content, new_message.channel_id)
+    
     return new_message
 
 
@@ -19,6 +24,17 @@ def read_messages(limit: int, offset: int):
 # Получение сообщения по ID
 def read_message(message_id: int):
     return db.query(message_model.Message).filter(message_model.Message.id == message_id).first()
+
+
+# Получение сообщений по channel_id с поддержкой пагинации
+def read_messages_by_channel(channel_id: int, limit: int = 5, offset: int = 0):
+    return (
+        db.query(message_model.Message)
+        .filter(message_model.Message.channel_id == channel_id)
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
 
 
 # Обновление данных сообщения

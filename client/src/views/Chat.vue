@@ -2,8 +2,9 @@
   <div class="chat">
     <div class="messages">
       <div v-for="(message, index) in messages" :key="index" class="message">
-        <span class="username">{{ message.username }}:</span>
-        <span class="text">{{ message.text }}</span>
+        <span class="username">{{ message.user_id }}:</span>
+        <span class="text">{{ message.content }}</span>
+        <!-- Замените text на content, если используется это поле -->
       </div>
     </div>
     <div class="chat-input">
@@ -19,19 +20,41 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useUserStore } from "../store/userStore.js";
+import { useMessageStore } from "../store/messageStore.js";
 
-const messages = ref([
-  { username: "Пользователь 1", text: "Привет!" },
-  { username: "Пользователь 2", text: "Привет, как дела?" },
-]);
+const userStore = useUserStore();
+const messageStore = useMessageStore();
 
 const newMessage = ref("");
 
-const sendMessage = () => {
+// Загружаем сообщения из первого канала при монтировании компонента
+const messages = ref([]);
+const loadMessages = async () => {
+  try {
+    messages.value = await messageStore.getMessagesByChannel(1); // Загружаем сообщения для channel_id 1
+  } catch (error) {
+    console.error("Ошибка загрузки сообщений:", error);
+  }
+};
+
+onMounted(loadMessages);
+
+const sendMessage = async () => {
   if (newMessage.value.trim() !== "") {
-    messages.value.push({ username: "Вы", text: newMessage.value });
-    newMessage.value = "";
+    try {
+      await messageStore.createMessage({
+        channel_id: 1,
+        user_id: userStore.getUser.id, // Предполагается, что у пользователя есть id
+        content: newMessage.value,
+      });
+      // Обновляем список сообщений после отправки нового
+      await loadMessages();
+      newMessage.value = "";
+    } catch (error) {
+      console.error("Ошибка отправки сообщения:", error);
+    }
   }
 };
 </script>
@@ -56,6 +79,7 @@ const sendMessage = () => {
 
 .username {
   font-weight: bold;
+  margin-right: 5px;
 }
 
 .chat-input {

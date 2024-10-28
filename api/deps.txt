@@ -13,3 +13,4 @@ gunicorn
 passlib
 python-jose[cryptography]
 bcrypt
+websockets

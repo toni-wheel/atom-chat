@@ -4,15 +4,19 @@ import crud.message as message_crud, schemas.message as message_schemas
 
 message_router = APIRouter(prefix="/messages", tags=["messages"])
 
+
 # Создание сообщения
 @message_router.post("/", response_model=message_schemas.MessageOut)
-def create_message(message: Annotated[message_schemas.MessageCreate, Depends()]):
-    return message_crud.create_message(message)
+async def create_message(message: Annotated[message_schemas.MessageCreate, Depends()]):
+    new_message = await message_crud.create_message(message)
+    return new_message
+
 
 # Получить данные всех сообщений
 @message_router.get("/", response_model=List[message_schemas.MessageOut])
 def read_messages(limit: int = 5, offset: int = 0):
     return message_crud.read_messages(limit, offset)
+
 
 # Получение данных сообщения по ID
 @message_router.get("/{message_id}", response_model=message_schemas.MessageOut)
@@ -22,6 +26,16 @@ def read_message(message_id: int):
         raise HTTPException(status_code=404, detail="Сообщение не найдено")
     return found_message
 
+
+# Получение сообщений по channel_id
+@message_router.get("/channel/{channel_id}", response_model=List[message_schemas.MessageOut])
+def read_messages_by_channel(channel_id: int, limit: int = 5, offset: int = 0):
+    messages = message_crud.read_messages_by_channel(channel_id, limit, offset)
+    # if not messages:
+    #     raise HTTPException(status_code=404, detail="Сообщения не найдены для данного канала")
+    return messages
+
+
 # Обновление данных сообщения
 @message_router.patch("/{message_id}")
 def update_message(message_id: int, field: Annotated[message_schemas.MessageUpdateField, Depends()]):
@@ -30,6 +44,7 @@ def update_message(message_id: int, field: Annotated[message_schemas.MessageUpda
         raise HTTPException(status_code=404, detail="Сообщение не найдено или неверный формат данных")
     return updated_message
 
+
 # Удаление сообщения по ID
 @message_router.delete("/{message_id}")
 def delete_message(message_id: int):
@@ -37,6 +52,7 @@ def delete_message(message_id: int):
     if deleted_message is None:
         raise HTTPException(status_code=404, detail="Сообщение не найдено")
     return deleted_message
+
 
 # Удаление всех сообщений
 @message_router.delete("/")

@@ -8,9 +8,32 @@ const API_URL = "http://localhost:8000/user"; // Общий URL бэкенда �
 export const useUserStore = defineStore("userStore", {
   state: () => ({
     user: useStorage("user", null), // сохраняем информацию о пользователе
+    accessToken: useStorage("accessToken", null), // сохраняем токен доступа
     isAuthenticated: useStorage("isAuthenticated", false), // флаг авторизации
     isLoading: false, // флаг загрузки
   }),
+
+  getters: {
+    // Геттер для получения информации о пользователе
+    getUser(state) {
+      return state.user;
+    },
+
+    // Геттер для получения статуса авторизации
+    isUserAuthenticated(state) {
+      return state.isAuthenticated;
+    },
+
+    // Геттер для получения токена доступа
+    getAccessToken(state) {
+      return state.accessToken;
+    },
+
+    // Дополнительный геттер для получения имени пользователя
+    getUsername(state) {
+      return state.user ? state.user.username : null; // Возвращаем имя пользователя или null, если пользователь не авторизован
+    },
+  },
 
   actions: {
     // Функция для отправки запросов к API
@@ -46,7 +69,10 @@ export const useUserStore = defineStore("userStore", {
       this.isLoading = true;
       try {
         const userData = await this.apiRequest("login", credentials);
-        this.user = userData; // сохраняем данные пользователя
+
+        // Сохраняем данные пользователя и токен
+        this.user = userData.user; // сохраняем данные пользователя
+        this.accessToken = userData.access_token; // сохраняем токен доступа
         this.isAuthenticated = true; // отмечаем, что пользователь авторизован
         toast.success("Авторизация успешна!");
       } catch (error) {
@@ -62,7 +88,8 @@ export const useUserStore = defineStore("userStore", {
       this.isLoading = true;
       try {
         const userData = await this.apiRequest("register", credentials);
-        this.user = userData; // сохраняем данные пользователя
+        this.user = userData.user; // сохраняем данные пользователя
+        this.accessToken = userData.access_token; // сохраняем токен доступа
         this.isAuthenticated = true; // отмечаем, что пользователь авторизован
         toast.success("Регистрация успешна!");
       } catch (error) {
@@ -76,8 +103,10 @@ export const useUserStore = defineStore("userStore", {
     // Функция для выхода пользователя
     logoutUser() {
       this.user = null;
+      this.accessToken = null; // очищаем токен доступа
       this.isAuthenticated = false;
       useStorage("user", null); // очищаем хранилище
+      useStorage("accessToken", null); // очищаем токен в хранилище
       toast.success("Вы успешно вышли из системы!");
     },
   },

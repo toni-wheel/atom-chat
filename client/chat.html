@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      let channelId = 1; // Замените на нужный ID канала
+      let socket = new WebSocket(`ws://localhost:8000/ws/${channelId}`);
+
+      socket.onopen = function (event) {
+        console.log("WebSocket подключен");
+        socket.send("Привет, канал!"); // Отправка тестового сообщения
+      };
+
+      socket.onmessage = function (event) {
+        console.log("Новое сообщение:", event.data); // Получение сообщения от сервера
+      };
+
+      socket.onclose = function (event) {
+        console.log("WebSocket отключен");
+      };
+
+      socket.onerror = function (error) {
+        console.log("Ошибка WebSocket:", error);
+      };
+    </script>
+  </body>
+</html>
