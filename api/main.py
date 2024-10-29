@@ -4,6 +4,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from routers.user import user_router
 from routers.message import message_router
 from routers.channel import channel_router
+from routers.membership import membership_router
 from fastapi.middleware.cors import CORSMiddleware
 from chat import manager
 
@@ -27,9 +28,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 app.include_router(user_router)
 app.include_router(message_router)
 app.include_router(channel_router)
+app.include_router(membership_router)
 
 
 @app.get("/")

@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 import crud.user as user_crud
 import schemas.user as user_schemas
+import models.user as user_models
+from utils.auth import get_user_from_token
 
 
 user_router = APIRouter(prefix="/user", tags=["user"])
@@ -64,3 +66,14 @@ def delete_users():
     if found_users is None:
         raise HTTPException(status_code=404, detail="Пользователь не найден")
     return found_users
+
+
+# Блокировка пользователя
+@user_router.post("/block/{user_id}")
+def block_user(user_id: int, current_user_name: user_models.User = Depends(get_user_from_token)):
+    current_user = user_crud.read_user_by_username(current_user_name)
+    if not current_user.is_moderator:
+        raise HTTPException(status_code=403, detail="Доступ запрещен. Только модератор может блокировать пользователей.")
+    if current_user.id == user_id:
+        raise HTTPException(status_code=400, detail="Вы не можете заблокировать сами себя.")
+    user_crud.block_user(user_id)

@@ -12,6 +12,6 @@ class User(Base):
     messages = relationship("Message", back_populates="user")
     memberships = relationship("Membership", back_populates="user")
 
-    # is_moderator = Column(Boolean, default=False)
-    # is_active = Column(Boolean, default=True)
+    is_moderator = Column(Boolean, default=False)
+    is_active = Column(Boolean, default=True)
     # blocked_users = relationship("BlockList", back_populates="blocked_by_user", foreign_keys="[BlockList.blocked_by]")

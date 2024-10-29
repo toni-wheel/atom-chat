@@ -3,7 +3,7 @@
 from fastapi import HTTPException
 from database import engine, db
 from passlib.context import CryptContext
-from jwt import create_access_token
+from utils.jwt import create_access_token
 import schemas.user as user_schemas
 import models.user as user_models
 
@@ -42,7 +42,9 @@ def register_user(user: user_schemas.UserCreate):
         raise HTTPException(status_code=400, detail="Такой пользователь уже существует!")
     new_user = user_models.User(
         username=user.username,
-        password=get_password_hash(user.password)
+        password=get_password_hash(user.password),
+        is_moderator=user.is_moderator,
+        is_active=user.is_active
     )
     db.add(new_user)
     db.commit()
@@ -74,6 +76,14 @@ def read_users(limit: int, offset: int):
 # Получение данных пользователя по ID
 def read_user(user_id: int):
     return db.query(user_models.User).filter(user_models.User.id == user_id).first()
+
+
+# Получение данных пользователя по имени пользователя
+def read_user_by_username(username: str):
+    user = db.query(user_models.User).filter(user_models.User.username == username).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+    return user
 
 
 # Обновление данных пользователя
@@ -110,4 +120,14 @@ def delete_users():
     db.commit()
     return found_users
 
+
+# Блокировка пользователя
+def block_user(user_id: int):
+    user = read_user(user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+    user.is_active = False
+    db.commit()
+    print(user.is_active)
+    return user
 
