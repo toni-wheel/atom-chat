@@ -23,7 +23,7 @@
               <td :class="{ blocked: !user.is_active }">{{ user.username }}</td>
               <td>
                 <button @click="blockUser(user)" :disabled="!user.is_active">
-                  {{ user.is_active ? "Заблокирован" : "Заблокировать" }}
+                  {{ !user.is_active ? "Заблокирован" : "Заблокировать" }}
                 </button>
               </td>
             </tr>

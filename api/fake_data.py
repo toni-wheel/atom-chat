@@ -54,3 +54,17 @@
     {"message": "Вечером планируем проверку аварийных систем."},
     {"message": "Не забудьте про плановое обучение по радиационной безопасности."}
 ]
+
+[
+    {"channel": "atom_talk"},
+    {"channel": "nuclear_chat"},
+    {"channel": "reactor_space"},
+    {"channel": "fission_friends"},
+    {"channel": "radiation_dialogue"},
+    {"channel": "power_conversations"},
+    {"channel": "isotope_chat"},
+    {"channel": "core_connection"},
+    {"channel": "energy_chatter"},
+    {"channel": "safety_talk"}
+]
+
