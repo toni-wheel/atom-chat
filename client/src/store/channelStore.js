@@ -3,7 +3,7 @@ import { useToast } from "vue-toast-notification";
 import { ref } from "vue";
 
 const toast = useToast();
-const API_URL = "http://localhost:8000/channels"; // URL для работы с API каналов
+let API_URL = "http://localhost:8000"; // URL для работы с API каналов
 
 export const useChannelStore = defineStore("channelStore", () => {
   const channels = ref([]); // Список каналов
@@ -30,10 +30,22 @@ export const useChannelStore = defineStore("channelStore", () => {
   };
 
   // Получение всех каналов с поддержкой пагинации
-  const fetchChannels = async (limit = 5, offset = 0) => {
+  const fetchChannels = async (
+    limit = 5,
+    offset = 0,
+    token,
+    isModerator,
+    userId
+  ) => {
     isLoading.value = true;
     try {
-      const channelsData = await apiRequest(`?limit=${limit}&offset=${offset}`);
+      let request = ``;
+      if (isModerator) {
+        request = `channels?limit=${limit}&offset=${offset}&token=${token}`;
+      } else {
+        request = `memberships/user/${userId}/channels?limit=${limit}&offset=${offset}`;
+      }
+      const channelsData = await apiRequest(request);
       channels.value = channelsData;
       return channelsData;
       toast.success("Каналы успешно загружены!");

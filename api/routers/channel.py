@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated, List
 import crud.channel as channel_crud, schemas.channel as channel_schemas
+import models.user as user_models
+from dependencies import moderator_only
+
 
 
 channel_router = APIRouter(prefix="/channels", tags=["channels"])
@@ -14,7 +17,7 @@ def create_channel(channel: Annotated[channel_schemas.ChannelCreate, Depends()])
 
 # Получить данные всех каналов
 @channel_router.get("/", response_model=List[channel_schemas.ChannelOut])
-def read_channels(limit: int = 5, offset: int = 0):
+def read_channels(limit: int = 5, offset: int = 0, current_user: user_models.User = Depends(moderator_only)):
     return channel_crud.read_channels(limit, offset)
 
 

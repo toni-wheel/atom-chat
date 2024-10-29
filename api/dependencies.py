@@ -5,9 +5,9 @@ import crud.user as user_crud
 
 
 # Проверка, что пользователь является модератором
-async def moderator_only(current_user_name: user_models.User = Depends(get_user_from_token)):
+def moderator_only(current_user_name: user_models.User = Depends(get_user_from_token)):
     current_user = user_crud.read_user_by_username(current_user_name)
     if not current_user.is_moderator:
-        raise HTTPException(status_code=403, detail="Доступ запрещен. Только модератор может блокировать пользователей.")
+        raise HTTPException(status_code=403, detail="Доступ запрещен. Только модератор имеет доступ.")
     return current_user
 

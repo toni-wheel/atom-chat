@@ -49,8 +49,13 @@ const currentChannelId = ref(1); // Изначально выбран первы
 // Загружаем список каналов
 const loadChannels = async () => {
   try {
-    channels.value = await channelStore.fetchChannels();
-    console.log(channels.value);
+    channels.value = await channelStore.fetchChannels(
+      5,
+      0,
+      userStore.getAccessToken,
+      userStore.user.is_moderator,
+      userStore.user.id
+    );
   } catch (error) {
     console.error("Ошибка загрузки каналов:", error);
   }
@@ -71,6 +76,7 @@ const loadMessages = async () => {
 onMounted(async () => {
   await loadChannels();
   await loadMessages();
+  console.log(userStore.user.is_moderator);
 });
 
 // Обработчик выбора канала
