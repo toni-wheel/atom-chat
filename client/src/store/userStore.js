@@ -3,51 +3,39 @@ import { useStorage } from "@vueuse/core";
 import { useToast } from "vue-toast-notification";
 
 const toast = useToast();
-const API_URL = "http://localhost:8000/user"; // Общий URL бэкенда для авторизации и регистрации
+const API_URL = "http://localhost:8000/user";
 
 export const useUserStore = defineStore("userStore", {
   state: () => ({
-    user: useStorage("user", null), // сохраняем информацию о пользователе
-    accessToken: useStorage("accessToken", null), // сохраняем токен доступа
-    isAuthenticated: useStorage("isAuthenticated", false), // флаг авторизации
-    isLoading: false, // флаг загрузки
+    user: useStorage("user", null),
+    accessToken: useStorage("accessToken", null),
+    isAuthenticated: useStorage("isAuthenticated", false),
+    isLoading: false,
+    users: useStorage("users", []), // Сохраняем состояние пользователей в localStorage
   }),
 
   getters: {
-    // Геттер для получения информации о пользователе
     getUser(state) {
       return state.user;
     },
-
-    // Геттер для получения статуса авторизации
     isUserAuthenticated(state) {
       return state.isAuthenticated;
     },
-
-    // Геттер для получения токена доступа
     getAccessToken(state) {
       return state.accessToken;
     },
-
-    // Дополнительный геттер для получения имени пользователя
     getUsername(state) {
-      return state.user ? state.user.username : null; // Возвращаем имя пользователя или null, если пользователь не авторизован
+      return state.user ? state.user.username : null;
     },
   },
 
   actions: {
-    // Функция для отправки запросов к API
-    async apiRequest(endpoint, credentials) {
+    async apiRequest(endpoint, credentials = {}) {
       const { username, password } = credentials;
 
-      // Выводим данные в консоль перед отправкой
       console.log(`Отправка данных для ${endpoint}:`, { username, password });
 
-      // Формируем URL с параметрами
-      const params = new URLSearchParams({
-        username,
-        password,
-      }).toString();
+      const params = new URLSearchParams({ username, password }).toString();
 
       const response = await fetch(`${API_URL}/${endpoint}?${params}`, {
         method: "POST",
@@ -64,50 +52,111 @@ export const useUserStore = defineStore("userStore", {
       return await response.json();
     },
 
-    // Функция для авторизации
     async loginUser(credentials) {
       this.isLoading = true;
       try {
         const userData = await this.apiRequest("login", credentials);
 
-        // Сохраняем данные пользователя и токен
-        this.user = userData.user; // сохраняем данные пользователя
-        this.accessToken = userData.access_token; // сохраняем токен доступа
-        this.isAuthenticated = true; // отмечаем, что пользователь авторизован
+        this.user = userData.user;
+        this.accessToken = userData.access_token;
+        this.isAuthenticated = true;
         toast.success("Авторизация успешна!");
       } catch (error) {
         toast.error(error.message || "Ошибка при авторизации");
-        throw error; // пробрасываем ошибку дальше для обработки в компоненте
+        throw error;
       } finally {
         this.isLoading = false;
       }
     },
 
-    // Функция для регистрации
     async registerUser(credentials) {
       this.isLoading = true;
       try {
         const userData = await this.apiRequest("register", credentials);
-        this.user = userData.user; // сохраняем данные пользователя
-        this.accessToken = userData.access_token; // сохраняем токен доступа
-        this.isAuthenticated = true; // отмечаем, что пользователь авторизован
+        this.user = userData.user;
+        this.accessToken = userData.access_token;
+        this.isAuthenticated = true;
         toast.success("Регистрация успешна!");
       } catch (error) {
         toast.error(error.message || "Ошибка при регистрации");
-        throw error; // пробрасываем ошибку дальше для обработки в компоненте
+        throw error;
       } finally {
         this.isLoading = false;
       }
     },
 
-    // Функция для выхода пользователя
     logoutUser() {
       this.user = null;
-      this.accessToken = null; // очищаем токен доступа
+      this.accessToken = null;
       this.isAuthenticated = false;
-      useStorage("user", null); // очищаем хранилище
-      useStorage("accessToken", null); // очищаем токен в хранилище
+      useStorage("user", null);
+      useStorage("accessToken", null);
       toast.success("Вы успешно вышли из системы!");
+    },
+
+    // Функция для получения всех пользователей
+    async fetchUsers(limit = 10, offset = 0) {
+      this.isLoading = true;
+      try {
+        const response = await fetch(
+          `${API_URL}/?limit=${limit}&offset=${offset}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.accessToken}`, // передаем токен доступа
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.detail || "Ошибка при получении списка пользователей"
+          );
+        }
+
+        this.users = await response.json();
+      } catch (error) {
+        toast.error(
+          error.message || "Ошибка при получении списка пользователей"
+        );
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    // Функция для блокировки пользователя
+    async blockUser(user_id, token) {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/user/block/${user_id}?token=${token}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.detail || "Ошибка при блокировке пользователя"
+          );
+        }
+
+        // Обновляем статус блокировки в локальном состоянии
+        const userIndex = this.users.findIndex((user) => user.id === user_id);
+        if (userIndex !== -1) {
+          this.users[userIndex].isBlocked = true;
+        }
+
+        toast.success("Пользователь успешно заблокирован!");
+      } catch (error) {
+        toast.error(error.message || "Ошибка при блокировке пользователя");
+        throw error;
+      }
     },
   },
 });

@@ -7,6 +7,7 @@ from utils.jwt import create_access_token
 import schemas.user as user_schemas
 import models.user as user_models
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
