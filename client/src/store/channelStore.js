@@ -1,12 +1,13 @@
 import { defineStore } from "pinia";
 import { useToast } from "vue-toast-notification";
 import { ref } from "vue";
+import { useStorage } from "@vueuse/core"; // Импортируем useStorage
 
 const toast = useToast();
 let API_URL = "http://localhost:8000"; // URL для работы с API каналов
 
 export const useChannelStore = defineStore("channelStore", () => {
-  const channels = ref([]); // Список каналов
+  const channels = useStorage("channels", []); // Список каналов
   const isLoading = ref(false); // Флаг загрузки
 
   // Универсальная функция для выполнения запросов к API

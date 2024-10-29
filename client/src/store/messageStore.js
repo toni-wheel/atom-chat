@@ -1,12 +1,13 @@
 import { defineStore } from "pinia";
 import { useToast } from "vue-toast-notification";
+import { useStorage } from "@vueuse/core"; // Импортируем useStorage
 
 const toast = useToast();
 const API_URL = "http://localhost:8000/messages"; // URL для работы с API сообщений
 
 export const useMessageStore = defineStore("messageStore", {
   state: () => ({
-    messages: {}, // Словарь для хранения сообщений по channel_id
+    messages: useStorage("messages", {}), // Сообщения сохраняются в localStorage
     isLoading: false, // флаг загрузки
   }),
 

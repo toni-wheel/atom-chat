@@ -50,7 +50,7 @@ const currentChannelId = ref(1); // Изначально выбран первы
 const loadChannels = async () => {
   try {
     channels.value = await channelStore.fetchChannels(
-      5,
+      10,
       0,
       userStore.getAccessToken,
       userStore.user.is_moderator,
@@ -76,7 +76,7 @@ const loadMessages = async () => {
 onMounted(async () => {
   await loadChannels();
   await loadMessages();
-  console.log(userStore.user.is_moderator);
+  console.log(userStore.getUser);
 });
 
 // Обработчик выбора канала

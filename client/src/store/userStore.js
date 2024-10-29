@@ -1,13 +1,15 @@
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
 import { useToast } from "vue-toast-notification";
+import router from "../router/index.js";
 
 const toast = useToast();
+
 const API_URL = "http://localhost:8000/user";
 
 export const useUserStore = defineStore("userStore", {
   state: () => ({
-    user: useStorage("user", null),
+    user: JSON.parse(localStorage.getItem("user")) || null, // Получаем user из localStorage
     accessToken: useStorage("accessToken", null),
     isAuthenticated: useStorage("isAuthenticated", false),
     isLoading: false,
@@ -60,7 +62,11 @@ export const useUserStore = defineStore("userStore", {
         this.user = userData.user;
         this.accessToken = userData.access_token;
         this.isAuthenticated = true;
+        localStorage.setItem("user", JSON.stringify(this.user)); // Сохраняем user в localStorage
         toast.success("Авторизация успешна!");
+
+        // Перенаправляем пользователя на страницу dashboard
+        router.push("/dashboard");
       } catch (error) {
         toast.error(error.message || "Ошибка при авторизации");
         throw error;
@@ -76,7 +82,10 @@ export const useUserStore = defineStore("userStore", {
         this.user = userData.user;
         this.accessToken = userData.access_token;
         this.isAuthenticated = true;
+        localStorage.setItem("user", JSON.stringify(this.user)); // Сохраняем user в localStorage
         toast.success("Регистрация успешна!");
+        // Перенаправляем пользователя на страницу dashboard
+        router.push("/dashboard");
       } catch (error) {
         toast.error(error.message || "Ошибка при регистрации");
         throw error;
@@ -89,8 +98,8 @@ export const useUserStore = defineStore("userStore", {
       this.user = null;
       this.accessToken = null;
       this.isAuthenticated = false;
-      useStorage("user", null);
-      useStorage("accessToken", null);
+      localStorage.removeItem("user"); // Удаляем user из localStorage
+      localStorage.removeItem("accessToken"); // Удаляем accessToken из localStorage
       toast.success("Вы успешно вышли из системы!");
     },
 
@@ -126,6 +135,7 @@ export const useUserStore = defineStore("userStore", {
         this.isLoading = false;
       }
     },
+
     // Функция для блокировки пользователя
     async blockUser(user_id, token) {
       try {

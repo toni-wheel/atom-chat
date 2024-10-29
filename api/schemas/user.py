@@ -1,11 +1,12 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
     username: str
     password: str
-    is_moderator: bool
-    is_active: bool
+    is_moderator: Optional[bool] = False  # значение по умолчанию False
+    is_active: Optional[bool] = True      # значение по умолчанию True
 
 
 class UserCreate(UserBase):

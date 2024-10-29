@@ -4,7 +4,10 @@
       <Chat />
     </div>
     <div class="admin">
-      <h1>Добро пожаловать, {{ userStore.getUsername }}!</h1>
+      <div class="header">
+        <h1>Добро пожаловать, {{ userStore.getUsername }}!</h1>
+        <button @click="logoutUser" class="logout-button">Выйти</button>
+      </div>
 
       <div v-if="userStore.getUser.is_moderator" class="user-list">
         <h2>Список пользователей</h2>
@@ -35,9 +38,11 @@
 import Chat from "./Chat.vue";
 import { useUserStore } from "../store/userStore.js";
 import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const userStore = useUserStore();
 const users = ref([]);
+const router = useRouter();
 
 // Загружаем пользователей при монтировании компонента
 onMounted(async () => {
@@ -53,6 +58,12 @@ const blockUser = async (user) => {
   } catch (error) {
     console.error("Ошибка при блокировке пользователя:", error.message);
   }
+};
+
+// Функция выхода из системы
+const logoutUser = async () => {
+  userStore.logoutUser();
+  await router.push("/"); // Перенаправляем на страницу входа после выхода
 };
 </script>
 
@@ -73,8 +84,28 @@ const blockUser = async (user) => {
   padding: 16px;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .admin h1 {
   margin: 0;
+}
+
+.logout-button {
+  padding: 6px 12px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
 }
 
 .user-list {
