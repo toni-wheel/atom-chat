@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated, List
 import crud.message as message_crud, schemas.message as message_schemas
+import models.user as user_models
 
 message_router = APIRouter(prefix="/messages", tags=["messages"])
 

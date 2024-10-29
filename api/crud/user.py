@@ -63,7 +63,8 @@ def login(user: user_schemas.UserLogin):
     user = authenticate_user(user.username, user.password)
     if not user:
         raise HTTPException(status_code=400, detail="Неправильное имя пользователя или пароль")
-    
+    if not user.is_active:
+            raise HTTPException(status_code=403, detail="Ваш аккаунт заблокирован.")   
     access_token = create_access_token(data={"sub": user.username})
     return {"user": user, "access_token": access_token, "token_type": "bearer"}
 

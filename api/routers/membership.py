@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException
-from typing import List
+from fastapi import APIRouter, Depends, HTTPException
+from typing import List, Annotated
 import crud.membership as membership_crud
 import schemas.membership as membership_schemas
-import schemas.user as user_schemas, schemas.channel as channel_schemas
+import schemas.user as user_schemas
+import schemas.channel as channel_schemas
 
 
 membership_router = APIRouter(prefix="/memberships", tags=["memberships"])
@@ -10,7 +11,9 @@ membership_router = APIRouter(prefix="/memberships", tags=["memberships"])
 
 # Создание нового членства
 @membership_router.post("/", response_model=membership_schemas.MembershipOut)
-async def create_membership(membership: membership_schemas.MembershipCreate):
+async def create_membership(
+    membership: Annotated[membership_schemas.MembershipCreate, Depends()]
+):
     return await membership_crud.create_membership(membership)
 
 
@@ -20,19 +23,15 @@ def read_memberships(limit: int = 5, offset: int = 0):
     return membership_crud.read_memberships(limit, offset)
 
 
-# Получение членства по ID
-@membership_router.get("/{membership_id}", response_model=membership_schemas.MembershipOut)
-def read_membership(membership_id: int):
-    membership = membership_crud.read_membership(membership_id)
-    if membership is None:
-        raise HTTPException(status_code=404, detail="Членство не найдено")
-    return membership
-
-
 # Обновление членства по ID
 @membership_router.patch("/{membership_id}", response_model=membership_schemas.MembershipOut)
-def update_membership(membership_id: int, update_data: membership_schemas.MembershipUpdate):
-    updated_membership = membership_crud.update_membership(membership_id, update_data.dict(exclude_unset=True))
+def update_membership(
+    membership_id: int,
+    update_data: Annotated[membership_schemas.MembershipUpdate, Depends()],
+):
+    updated_membership = membership_crud.update_membership(
+        membership_id, update_data.dict(exclude_unset=True)
+    )
     if updated_membership is None:
         raise HTTPException(status_code=404, detail="Членство не найдено")
     return updated_membership

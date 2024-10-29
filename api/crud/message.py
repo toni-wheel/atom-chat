@@ -1,11 +1,17 @@
+from fastapi import HTTPException
 import models.message as message_model, schemas.message as message_schemas
 from database import engine, db
 from chat import manager
-
+import crud.user as user_crud
 
 
 # Создание сообщения
 async def create_message(message: message_schemas.MessageCreate):
+    current_user = user_crud.read_user(message.user_id)
+
+    if not current_user.is_active:
+        raise HTTPException(status_code=403, detail="Ваш аккаунт заблокирован.")  
+
     new_message = message_model.Message(**message.model_dump())
     db.add(new_message)
     db.commit()

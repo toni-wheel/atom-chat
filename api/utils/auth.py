@@ -27,4 +27,4 @@ def get_user_from_token(token: str):
         raise HTTPException(status_code=401, detail="Невалидный токен")
     
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJib2JfYnJvd24iLCJleHAiOjE3MzAxODkwOTJ9._KXp8rJf4NSld24mjabB5OI51NQ1CelHCRrXXaj9JCw"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbGljZV9qb2huc29uIiwiZXhwIjoxNzMwMTkyMzQ5fQ.t9lr6iZqDYQELLUM3ouTZqJlvC1lpmhbIEWk34jyk8U"
