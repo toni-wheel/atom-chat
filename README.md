@@ -6,23 +6,13 @@ Atom Chat — это сервис для создания и управлени�
 
 ## Структура Базы Данных
 
-### Каналы (Channels)
+### Пользователи (Users)
 
-- **id:** Уникальный идентификатор канала.
-- **name:** Название канала (должно быть уникальным).
-- **is_private:** Флаг, указывающий, является ли канал приватным.
-- **created_at:** Дата и время создания канала.
-- **messages:** Связанные сообщения в канале.
-- **memberships:** Участники канала.
-
-### Члены (Memberships)
-
-- **id:** Уникальный идентификатор записи о членстве.
-- **user_id:** Идентификатор пользователя, присоединившегося к каналу.
-- **channel_id:** Идентификатор канала, к которому присоединился пользователь.
-- **joined_at:** Дата и время присоединения пользователя к каналу.
-- **user:** Связанный пользователь.
-- **channel:** Связанный канал.
+- **id:** Уникальный идентификатор пользователя.
+- **username:** Уникальное имя пользователя.
+- **password:** Хешированный пароль пользователя.
+- **is_moderator:** Флаг, указывающий, является ли пользователь модератором.
+- **is_active:** Флаг, указывающий, активен ли пользователь.
 
 ### Сообщения (Messages)
 
@@ -31,58 +21,69 @@ Atom Chat — это сервис для создания и управлени�
 - **channel_id:** Идентификатор канала, в котором отправлено сообщение.
 - **user_id:** Идентификатор пользователя, отправившего сообщение.
 - **created_at:** Дата и время отправки сообщения.
-- **channel:** Связанный канал.
-- **user:** Связанный пользователь.
 
-### Пользователи (Users)
+### Каналы (Channels)
 
-- **id:** Уникальный идентификатор пользователя.
-- **username:** Уникальное имя пользователя.
-- **password:** Хешированный пароль пользователя.
-- **messages:** Связанные сообщения, отправленные пользователем.
-- **memberships:** Членства пользователя в каналах.
-- **is_moderator:** Флаг, указывающий, является ли пользователь модератором.
-- **is_active:** Флаг, указывающий, активен ли пользователь.
+- **id:** Уникальный идентификатор канала.
+- **name:** Название канала (должно быть уникальным).
+- **is_private:** Флаг, указывающий, является ли канал приватным.
+- **created_at:** Дата и время создания канала.
+
+### Принадлежность (Memberships)
+
+- **id:** Уникальный идентификатор записи о принадлежности.
+- **user_id:** Идентификатор пользователя, присоединившегося к каналу.
+- **channel_id:** Идентификатор канала, к которому присоединился пользователь.
+- **joined_at:** Дата и время присоединения пользователя к каналу.
 
 ## API Эндпоинты
 
 ### Пользователи (Users)
 
-- **Создать пользователя:** `POST /user/`
-- **Получить пользователей:** `GET /user/`
-- **Удалить пользователей:** `DELETE /user/`
-- **Регистрация пользователя:** `POST /user/register`
-- **Авторизация пользователя:** `POST /user/login`
-- **Получить пользователя по ID:** `GET /user/{user_id}`
-- **Обновить пользователя по ID:** `PATCH /user/{user_id}`
-- **Удалить пользователя по ID:** `DELETE /user/{user_id}`
-- **Заблокировать пользователя:** `POST /user/block/{user_id}`
+- **Регистрация пользователя:** POST /user/register
+- **Авторизация пользователя:** POST /user/login
+- **Получить пользователей:** GET /user/
+- **Удалить пользователей:** DELETE /user/
+- **Получить пользователя по ID:** GET /user/{user_id}
+- **Обновить пользователя по ID:** PATCH /user/{user_id}
+- **Удалить пользователя по ID:** DELETE /user/{user_id}
+- **Заблокировать пользователя:** POST /user/block/{user_id}
 
 ### Сообщения (Messages)
 
-- **Создать сообщение:** `POST /messages/`
-- **Получить сообщения:** `GET /messages/`
-- **Удалить сообщения:** `DELETE /messages/`
-- **Получить сообщение по ID:** `GET /messages/{message_id}`
-- **Обновить сообщение по ID:** `PATCH /messages/{message_id}`
-- **Удалить сообщение по ID:** `DELETE /messages/{message_id}`
-- **Получить сообщения по каналу:** `GET /messages/channel/{channel_id}`
+- **Создать сообщение:** POST /messages/
+- **Получить сообщения:** GET /messages/
+- **Удалить сообщения:** DELETE /messages/
+- **Получить сообщение по ID:** GET /messages/{message_id}
+- **Обновить сообщение по ID:** PATCH /messages/{message_id}
+- **Удалить сообщение по ID:** DELETE /messages/{message_id}
+- **Получить сообщения по каналу:** GET /messages/channel/{channel_id}
 
 ### Каналы (Channels)
 
-- **Создать канал:** `POST /channels/`
-- **Получить каналы:** `GET /channels/`
-- **Удалить каналы:** `DELETE /channels/`
-- **Получить канал по ID:** `GET /channels/{channel_id}`
-- **Обновить канал по ID:** `PATCH /channels/{channel_id}`
-- **Удалить канал по ID:** `DELETE /channels/{channel_id}`
+- **Создать канал:** POST /channels/
+- **Получить каналы:** GET /channels/
+- **Удалить каналы:** DELETE /channels/
+- **Получить канал по ID:** GET /channels/{channel_id}
+- **Обновить канал по ID:** PATCH /channels/{channel_id}
+- **Удалить канал по ID:** DELETE /channels/{channel_id}
 
-### Членства (Memberships)
+### Принадлежность (Memberships)
 
-- **Создать членство:** `POST /memberships/`
-- **Получить членства:** `GET /memberships/`
-- **Удалить членства:** `DELETE /memberships/`
-- **Обновить членство по ID:** `PATCH /memberships/{membership_id}`
-- **Удалить членство по ID:** `DELETE /memberships/{membership_id}`
-- **Получить пользователей по каналу:** `GET /memberships/channel/{channel_id}/users`
-- **Получить каналы по пользователю:** `GET /memberships/user/{user_id}/channels`
+- **Создать принадлежность:** POST /memberships/
+- **Получить принадлежности:** GET /memberships/
+- **Удалить принадлежности:** DELETE /memberships/
+- **Обновить принадлежность по ID:** PATCH /memberships/{membership_id}
+- **Удалить принадлежность по ID:** DELETE /memberships/{membership_id}
+- **Получить пользователей по каналу:** GET /memberships/channel/{channel_id}/users
+- **Получить каналы по пользователю:** GET /memberships/user/{user_id}/channels
+
+## Визуал
+
+![Screenshot 1](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_1.png)
+![Screenshot 2](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_2.png)
+![Screenshot 3](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_3.png)
+![Screenshot 4](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_4.png)
+![Screenshot 5](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_5.png)
+![Screenshot 6](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_6.png)
+![Screenshot 7](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_7.png)
