@@ -108,30 +108,29 @@ Atom Chat — это сервис для создания и управлени�
 
 ### Подготовка бэкенда
 
-cd api
-python -m venv venv
-source venv/Scripts/activate
-pip install -r deps.txt
-alembic init migrations
-alembic revision --autogenerate -m "Старт"
-alembic upgrade head
-uvicorn main:app --reload
+- cd api
+- python -m venv venv
+- source venv/Scripts/activate
+- pip install -r deps.txt
+- alembic init migrations
+- alembic revision --autogenerate -m "Старт"
+- alembic upgrade head
+- uvicorn main:app --reload
 
-Доступен по порту http://localhost:8000/
-Эндпоинты http://localhost:8000/docs
+! Доступен по порту http://localhost:8000/
+! Эндпоинты http://localhost:8000/docs
 
 ### Подготовка фронтенда
 
-cd clinet
-npm install
-npm run build
+- cd clinet
+- npm install
+- npm run build
 
-Доступен в файле index.html (его необходимо поместить на корневую папку веб-сервера)
+! Доступен в файле index.html (его необходимо поместить на корневую папку веб-сервера)
 
 ### Запуск на сервере
 
-Загрузить папку с проектом на сервер
+! Загрузить папку с проектом на сервер
 
-cd api
-
-docker-compose up -d
+- cd api
+- docker-compose up -d
