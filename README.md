@@ -4,6 +4,32 @@
 
 Atom Chat — это сервис для создания и управления приватными чатами. Он разработан с использованием технологий Vue.js и FastAPI, а данные хранятся в PostgreSQL. С помощью Atom Chat пользователи могут обмениваться сообщениями, создавать каналы и управлять участниками чатов.
 
+## Визуал
+
+### Регистрация нового пользователя
+
+![Screenshot 2](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_2.png)
+
+### Регистрация существующего пользователя
+
+![Screenshot 1](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_1.png)
+
+### Вход в чат в качестве модератора. Доступы все каналы, списки пользователей и кнопка "Заблокировать".
+
+![Screenshot 3](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_3.png)
+
+### Блокировка неугодных пользователей
+
+![Screenshot 4](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_4.png)
+
+### Заблокированный пользователь не может залогиниться (также есть рут на запрет отправки сообщения)
+
+![Screenshot 5](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_5.png)
+
+### Пользователь видит только те чаты, в которые добавлен
+
+![Screenshot 7](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_7.png)
+
 ## Структура Базы Данных
 
 ### Пользователи (Users)
@@ -77,13 +103,3 @@ Atom Chat — это сервис для создания и управлени�
 - **Удалить принадлежность по ID:** DELETE /memberships/{membership_id}
 - **Получить пользователей по каналу:** GET /memberships/channel/{channel_id}/users
 - **Получить каналы по пользователю:** GET /memberships/user/{user_id}/channels
-
-## Визуал
-
-![Screenshot 1](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_1.png)
-![Screenshot 2](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_2.png)
-![Screenshot 3](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_3.png)
-![Screenshot 4](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_4.png)
-![Screenshot 5](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_5.png)
-![Screenshot 6](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_6.png)
-![Screenshot 7](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_7.png)
