@@ -2,7 +2,7 @@
 
 ## Описание
 
-Atom Chat — это сервис для создания и управления приватными чатами. Он разработан с использованием технологий Vue.js и FastAPI, а данные хранятся в PostgreSQL. С помощью Atom Chat пользователи могут обмениваться сообщениями, создавать каналы и управлять участниками чатов.
+Atom Chat — это сервис для создания и управления приватными чатами. Он разработан с использованием технологий Vue.js (фронтенд) и FastAPI (бэкенд), а данные хранятся в PostgreSQL. С помощью Atom Chat пользователи могут обмениваться сообщениями, создавать каналы и управлять участниками чатов.
 
 ## Визуал
 
@@ -14,7 +14,7 @@ Atom Chat — это сервис для создания и управлени�
 
 ![Screenshot 1](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_1.png)
 
-### Вход в чат в качестве модератора. Доступы все каналы, списки пользователей и кнопка "Заблокировать".
+### Вход в чат в качестве модератора. Доступны все каналы, списки пользователей и кнопка "Заблокировать".
 
 ![Screenshot 3](https://s3.timeweb.cloud/6dfc936a-codelab.pro/atom-chat/Screenshot_3.png)
 
@@ -103,3 +103,35 @@ Atom Chat — это сервис для создания и управлени�
 - **Удалить принадлежность по ID:** DELETE /memberships/{membership_id}
 - **Получить пользователей по каналу:** GET /memberships/channel/{channel_id}/users
 - **Получить каналы по пользователю:** GET /memberships/user/{user_id}/channels
+
+## Деплой проекта
+
+### Подготовка бэкенда
+
+cd api
+python -m venv venv
+source venv/Scripts/activate
+pip install -r deps.txt
+alembic init migrations
+alembic revision --autogenerate -m "Старт"
+alembic upgrade head
+uvicorn main:app --reload
+
+Доступен по порту http://localhost:8000/
+Эндпоинты http://localhost:8000/docs
+
+### Подготовка фронтенда
+
+cd clinet
+npm install
+npm run build
+
+Доступен в файле index.html (его необходимо поместить на корневую папку веб-сервера)
+
+### Запуск на сервере
+
+Загрузить папку с проектом на сервер
+
+cd api
+
+docker-compose up -d
