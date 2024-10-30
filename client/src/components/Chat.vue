@@ -14,7 +14,9 @@
 
     <div class="messages">
       <div v-for="(message, index) in messages" :key="index" class="message">
-        <span class="username">{{ message.user_id }}:</span>
+        <span class="username"
+          >{{ userStore.getUserById(message.user_id).username }}:</span
+        >
         <span class="text">{{ message.content }}</span>
       </div>
     </div>
@@ -76,7 +78,7 @@ const loadMessages = async () => {
 onMounted(async () => {
   await loadChannels();
   await loadMessages();
-  console.log(userStore.getUser);
+  console.log(userStore.getUserById(1));
 });
 
 // Обработчик выбора канала

@@ -11,12 +11,6 @@ from dependencies import moderator_only
 user_router = APIRouter(prefix="/user", tags=["user"])
 
 
-# Создание пользователя
-@user_router.post("/")
-def create_user(user: Annotated[user_schemas.UserCreate, Depends()]):
-    return user_crud.create_user(user)
-
-
 # Регистрация пользователя
 @user_router.post("/register")
 def register_user(user: Annotated[user_schemas.UserCreate, Depends()]):

@@ -1,6 +1,7 @@
 # Взаимодействие с таблицей пользователей в БД
 
-from fastapi import HTTPException
+from fastapi import HTTPException, status
+from fastapi.responses import JSONResponse
 from database import engine, db
 from passlib.context import CryptContext
 from utils.jwt import create_access_token
@@ -27,20 +28,12 @@ def drop():
     user_models.Base.metadata.drop_all(engine)
 
 
-# Создание пользователя
-def create_user(user: user_schemas.UserCreate):
-    new_user = user_models.User(**user.model_dump())
-    db.add(new_user)
-    db.commit()
-    return new_user
-
-
 # Регистрация пользователя
 def register_user(user: user_schemas.UserCreate):
     # Проверяем, существует ли пользователь username
     user_exists = db.query(user_models.User).filter(user_models.User.username == user.username).first()
     if user_exists:
-        raise HTTPException(status_code=400, detail="Такой пользователь уже существует!")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Такой пользователь уже существует!")
     new_user = user_models.User(
         username=user.username,
         password=get_password_hash(user.password),
@@ -49,7 +42,9 @@ def register_user(user: user_schemas.UserCreate):
     )
     db.add(new_user)
     db.commit()
-    return new_user
+    db.refresh(new_user)
+    return JSONResponse(content={"message": "Пользователь успешно зарегистрирован!"}, status_code=status.HTTP_201_CREATED)
+
 
 
 # Авторизация пользователя
@@ -61,13 +56,21 @@ def authenticate_user(username: str, password: str):
 
 
 def login(user: user_schemas.UserLogin):
+    # Проверка подлинности пользователя
     user = authenticate_user(user.username, user.password)
     if not user:
-        raise HTTPException(status_code=400, detail="Неправильное имя пользователя или пароль")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Неправильное имя пользователя или пароль")
     if not user.is_active:
-            raise HTTPException(status_code=403, detail="Ваш аккаунт заблокирован.")   
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Ваш аккаунт заблокирован.")
+    
+    # Создаем токен доступа
     access_token = create_access_token(data={"sub": user.username})
-    return {"user": user, "access_token": access_token, "token_type": "bearer"}
+    
+    # Возвращаем JSON-ответ с токеном и данными пользователя
+    return JSONResponse(
+        content={"user": {"id": user.id, "username": user.username, "is_moderator": user.is_moderator}, "access_token": access_token, "token_type": "bearer"},
+        status_code=status.HTTP_200_OK
+    )
 
 
 # Получить данных всех пользователей

@@ -29,6 +29,13 @@ export const useUserStore = defineStore("userStore", {
     getUsername(state) {
       return state.user ? state.user.username : null;
     },
+    getUsers(state) {
+      return state.users;
+    },
+    // Новый геттер для поиска пользователя по ID
+    getUserById: (state) => (user_id) => {
+      return state.users.find((user) => user.id === user_id) || null;
+    },
   },
 
   actions: {
@@ -84,8 +91,6 @@ export const useUserStore = defineStore("userStore", {
         this.isAuthenticated = true;
         localStorage.setItem("user", JSON.stringify(this.user)); // Сохраняем user в localStorage
         toast.success("Регистрация успешна!");
-        // Перенаправляем пользователя на страницу dashboard
-        router.push("/dashboard");
       } catch (error) {
         toast.error(error.message || "Ошибка при регистрации");
         throw error;
